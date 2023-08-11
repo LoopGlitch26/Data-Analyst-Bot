@@ -5,6 +5,7 @@ from pandasai import PandasAI
 from pandasai.llm.openai import OpenAI
 from pycaret.regression import setup, compare_models, pull, save_model, load_model
 import plotly.express as px
+import os
 
 # Set up Streamlit app
 st.title("Data Analysis and ML App")
@@ -12,17 +13,7 @@ st.title("Data Analysis and ML App")
 # Initialize AI components
 secret_key = st.secrets["MY_SECRET_KEY"]
 llm = OpenAI(api_token=secret_key)
-
-import os
-from pathlib import Path
-
-# Create a custom cache directory within the app's working directory
-custom_cache_dir = Path(__file__).parent / "cache"
-if not custom_cache_dir.exists():
-    custom_cache_dir.mkdir()
-
-# Initialize PandasAI with the custom cache directory
-pandas_ai = PandasAI(llm, cache_dir=str(custom_cache_dir))
+pandas_ai = PandasAI(llm)
 
 # Initialize variables
 data_uploaded = False
