@@ -12,7 +12,7 @@ st.title("Data Analysis and ML App")
 # Initialize AI components
 secret_key = st.secrets["MY_SECRET_KEY"]
 llm = OpenAI(api_token=secret_key)
-pandas_ai = PandasAI(llm)
+pandas_ai = PandasAI(llm, cache_dir=None)
 
 # Initialize variables
 data_uploaded = False
