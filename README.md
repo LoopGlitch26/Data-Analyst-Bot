@@ -1,3 +1,3 @@
 # Data-Analyst-Bot
 
-[Video Tutorial](https://www.loom.com/share/bcfc9beefa124ab8add3722a062542ba)
+![Tutorial](https://github.com/LoopGlitch26/Data-Analyst-Bot/blob/main/Data%20Analyst%20Bot%20tutorial.mp4)
