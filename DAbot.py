@@ -6,7 +6,6 @@ from streamlit_pandas_profiling import st_profile_report
 st.title("Data Analyst Bot")
 
 data_uploaded = False
-eda_done = False
 df = None
 
 st.header("Please upload your dataset")
@@ -15,6 +14,7 @@ if file:
     df = pd.read_csv(file, index_col=None)
     df.to_csv('dataset.csv', index=None)
     st.dataframe(df)
+    data_uploaded = True
 
 if data_uploaded:
     st.header("Exploratory Data Analysis (EDA)")
