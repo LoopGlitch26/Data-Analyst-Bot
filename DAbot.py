@@ -2,14 +2,6 @@ import streamlit as st
 import pandas as pd
 import ydata_profiling as yp
 from streamlit_pandas_profiling import st_profile_report
-import streamlit as st
-import pandas as pd
-import ydata_profiling as yp
-from streamlit_pandas_profiling import st_profile_report
-from pandasai import SmartDataframe
-from pandasai.llm import OpenAI
-from pandasai.callbacks import StdoutCallback
-import os
 
 st.title("Data Analyst Bot")
 
