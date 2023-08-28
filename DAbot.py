@@ -36,7 +36,6 @@ def clear_submit():
     """
     Clear the Submit Button State
     Returns:
-
     """
     st.session_state["submit"] = False
 
@@ -75,7 +74,7 @@ if data_uploaded:
                                             placeholder="Paste your OpenAI API key here (sk-...)")
 
     with st.sidebar:
-        # ... (sidebar content)
+        # @BravishGhosh
 
     if "messages" not in st.session_state or st.sidebar.button("Clear conversation history"):
         st.session_state["messages"] = [{"role": "assistant", "content": "How can I help you?"}]
