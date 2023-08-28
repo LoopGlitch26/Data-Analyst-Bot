@@ -63,12 +63,7 @@ def load_data(uploaded_file):
         st.error(f"Unsupported file format: {ext}")
         return None
 
-uploaded_file = st.file_uploader(
-    "Upload a Data file",
-    type=list(file_formats.keys()),
-    help="Various File formats are Support",
-    on_change=clear_submit,
-)
+uploaded_file = file
 
 if uploaded_file:
     df = load_data(uploaded_file)
