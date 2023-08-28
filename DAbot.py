@@ -33,7 +33,6 @@ from pandasai.llm import OpenAI
 import streamlit as st
 import pandas as pd
 import os
-from pandasai_app.components.faq import faq
 
 file_formats = {
     "csv": pd.read_csv,
