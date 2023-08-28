@@ -32,12 +32,33 @@ if data_uploaded:
     st_profile_report(profile_df)
 
 
+
+# from langchain.llms import OpenAI
+from pandasai import SmartDataframe
+from pandasai.llm import OpenAI
+from pandasai.callbacks import StdoutCallback
+from pandasai.llm import OpenAI
+import streamlit as st
+import pandas as pd
+import os
+from pandasai_app.components.faq import faq
+
+file_formats = {
+    "csv": pd.read_csv,
+    "xls": pd.read_excel,
+    "xlsx": pd.read_excel,
+    "xlsm": pd.read_excel,
+    "xlsb": pd.read_excel,
+}
+
 def clear_submit():
     """
     Clear the Submit Button State
     Returns:
+
     """
     st.session_state["submit"] = False
+
 
 @st.cache_data(ttl="2h")
 def load_data(uploaded_file):
@@ -51,52 +72,48 @@ def load_data(uploaded_file):
         st.error(f"Unsupported file format: {ext}")
         return None
 
-if data_uploaded:
-    st.header("Exploratory Data Analysis (EDA)")
+uploaded_file = st.file_uploader(
+    "Upload a Data file",
+    type=list(file_formats.keys()),
+    help="Various File formats are Support",
+    on_change=clear_submit,
+)
 
-    # Perform EDA using ydata_profiling
-    profile_df = yp.ProfileReport(df)
-    st_profile_report(profile_df)
+if uploaded_file:
+    df = load_data(uploaded_file)
 
-    # Add Chat with CSV functionality
-    uploaded_file = st.file_uploader(
-        "Upload a Data file",
-        type=list(file_formats.keys()),
-        help="Various File formats are Support",
-        on_change=clear_submit,
-    )
+openai_api_key = st.sidebar.text_input("OpenAI API Key",
+                                        type="password",
+                                        placeholder="Paste your OpenAI API key here (sk-...)")
 
-    if uploaded_file:
-        df = load_data(uploaded_file)
+with st.sidebar:
+        st.markdown("@ Bravish Ghosh")
+        faq()
 
-    openai_api_key = st.sidebar.text_input("OpenAI API Key",
-                                            type="password",
-                                            placeholder="Paste your OpenAI API key here (sk-...)")
+if "messages" not in st.session_state or st.sidebar.button("Clear conversation history"):
+    st.session_state["messages"] = [{"role": "assistant", "content": "How can I help you?"}]
 
-    with st.sidebar:
-        # @BravishGhosh
+for msg in st.session_state.messages:
+    st.chat_message(msg["role"]).write(msg["content"])
 
-    if "messages" not in st.session_state or st.sidebar.button("Clear conversation history"):
-        st.session_state["messages"] = [{"role": "assistant", "content": "How can I help you?"}]
+if prompt := st.chat_input(placeholder="What is this data about?"):
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    st.chat_message("user").write(prompt)
 
-    for msg in st.session_state.messages:
-        st.chat_message(msg["role"]).write(msg["content"])
+    if not openai_api_key:
+        st.info("Please add your OpenAI API key to continue.")
+        st.stop()
 
-    if prompt := st.chat_input(placeholder="What is this data about?"):
-        st.session_state.messages.append({"role": "user", "content": prompt})
-        st.chat_message("user").write(prompt)
+    #PandasAI OpenAI Model
+    llm = OpenAI(api_token=openai_api_key)
+    # llm = OpenAI(api_token=openai_api_key)
 
-        if not openai_api_key:
-            st.info("Please add your OpenAI API key to continue.")
-            st.stop()
+    sdf = SmartDataframe(df, config = {"llm": llm,
+                                        "enable_cache": False,
+                                        "conversational": True,
+                                        "callback": StdoutCallback()})
 
-        llm = OpenAI(api_token=openai_api_key)
-        sdf = SmartDataframe(df, config={"llm": llm,
-                                         "enable_cache": False,
-                                         "conversational": True,
-                                         "callback": StdoutCallback()})
-
-        with st.chat_message("assistant"):
-            response = sdf.chat(st.session_state.messages)
-            st.session_state.messages.append({"role": "assistant", "content": response})
-            st.write(response)
+    with st.chat_message("assistant"):
+        response = sdf.chat(st.session_state.messages)
+        st.session_state.messages.append({"role": "assistant", "content": response})
+        st.write(response)
